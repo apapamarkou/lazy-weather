@@ -44,8 +44,8 @@ pick_city() {
         case "$key" in
             enter)
                 [[ "$choice" == "── Exit ──" ]] && return 1
-                # Move chosen city to top and save
-                cities=("$choice" $(printf '%s\n' "${cities[@]}" | grep -vxF "$choice"))
+                mapfile -t rest < <(printf '%s\n' "${cities[@]}" | grep -vxF "$choice")
+                cities=("$choice" "${rest[@]}")
                 save_config_value "CITIES" "$(IFS=','; echo "${cities[*]}")"
                 ;;
             ctrl-n)
@@ -56,7 +56,7 @@ pick_city() {
                 fi
                 ;;
             ctrl-x)
-                cities=($(printf '%s\n' "${cities[@]}" | grep -vxF "$choice"))
+                mapfile -t cities < <(printf '%s\n' "${cities[@]}" | grep -vxF "$choice")
                 [[ ${#cities[@]} -eq 0 ]] && { lw_error "No cities left"; return 1; }
                 save_config_value "CITIES" "$(IFS=','; echo "${cities[*]}")"
                 ;;
@@ -67,8 +67,8 @@ pick_city() {
                 done
                 if (( idx > 0 )); then
                     local tmp="${cities[$((idx-1))]}"
-                    cities[$((idx-1))]="$choice"
-                    cities[$idx]="$tmp"
+                    cities[idx-1]="$choice"
+                    cities[idx]="$tmp"
                     save_config_value "CITIES" "$(IFS=','; echo "${cities[*]}")"
                 fi
                 ;;
@@ -79,8 +79,8 @@ pick_city() {
                 done
                 if (( idx < ${#cities[@]} - 1 )); then
                     local tmp="${cities[$((idx+1))]}"
-                    cities[$((idx+1))]="$choice"
-                    cities[$idx]="$tmp"
+                    cities[idx+1]="$choice"
+                    cities[idx]="$tmp"
                     save_config_value "CITIES" "$(IFS=','; echo "${cities[*]}")"
                 fi
                 ;;

@@ -6,7 +6,7 @@ INSTALL_DIR="${HOME}/.local/bin"
 LIB_DIR="${HOME}/.local/lib/lazy-weather"
 CONFIG_DIR="${HOME}/.config/lazy-weather"
 
-C_RED='\033[0;31m'; C_CYAN='\033[0;36m'; C_RESET='\033[0m'
+C_CYAN='\033[0;36m'; C_RESET='\033[0m'
 info() { echo -e "${C_CYAN}[uninstall]${C_RESET} $*"; }
 
 removed=0

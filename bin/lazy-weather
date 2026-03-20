@@ -8,10 +8,15 @@ set -euo pipefail
 
 LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../lib" && pwd)"
 
+# shellcheck source=lib/utils.sh
 source "${LIB_DIR}/utils.sh"
+# shellcheck source=lib/config.sh
 source "${LIB_DIR}/config.sh"
+# shellcheck source=lib/cache.sh
 source "${LIB_DIR}/cache.sh"
+# shellcheck source=lib/weather.sh
 source "${LIB_DIR}/weather.sh"
+# shellcheck source=lib/ui.sh
 source "${LIB_DIR}/ui.sh"
 
 setup_colors
@@ -31,7 +36,7 @@ parse_args() {
             -m|--mini)         OPT_MINI=1;            shift   ;;
             -r|--refresh)      OPT_REFRESH=1;         shift   ;;
             -t|--ttl)          OPT_TTL="$2";          shift 2 ;;
-            -d|--debug)        LW_DEBUG=1;            shift   ;;
+            -d|--debug)        export LW_DEBUG=1;            shift   ;;
             --preview-city)    OPT_PREVIEW_CITY="$2"; shift 2 ;;
             --clear-cache)     cache_clear_all; exit 0 ;;
             -v|--version)      echo "lazy-weather v${LW_VERSION}"; exit 0 ;;
@@ -52,7 +57,7 @@ main() {
     init_config_dir
 
     # CLI flags override config
-    [[ -n "$OPT_TTL" ]] && LW_CACHE_TTL="$OPT_TTL"
+    [[ -n "$OPT_TTL" ]] && export LW_CACHE_TTL="$OPT_TTL"
 
     check_dependencies
 

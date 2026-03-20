@@ -3,7 +3,6 @@
 set -euo pipefail
 
 BATS_DIR="/tmp/bats-core"
-BATS_BIN="${HOME}/.local/bin/bats"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # ── Install bats-core if not available ────────────────────────────────────────

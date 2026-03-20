@@ -3,7 +3,8 @@
 
 readonly LW_CONFIG_DIR="${HOME}/.config/lazy-weather"
 readonly LW_CONFIG_FILE="${LW_CONFIG_DIR}/config"
-readonly LW_DEFAULT_CONFIG_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../config" && pwd)"
+LW_DEFAULT_CONFIG_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../config" && pwd)"
+readonly LW_DEFAULT_CONFIG_DIR
 
 # Defaults (overridden by config file, then CLI flags)
 LW_CITIES=()
@@ -37,14 +38,15 @@ _source_conf() {
         case "$key" in
             CITIES)
                 IFS=',' read -ra LW_CITIES <<< "$value"
+                export LW_CITIES
                 ;;
-            DEFAULT_CITY)    LW_DEFAULT_CITY="$value" ;;
-            CACHE_TTL)       LW_CACHE_TTL="$value" ;;
-            CACHE_DIR)       LW_CACHE_DIR="$value" ;;
-            MINI_FORMAT)     LW_MINI_FORMAT="$value" ;;
-            FORECAST_DAYS)   LW_FORECAST_DAYS="$value" ;;
-            WTTR_VERSION)    LW_WTTR_VERSION="$value" ;;
-            UNITS)           LW_UNITS="$value" ;;
+            DEFAULT_CITY)    export LW_DEFAULT_CITY="$value" ;;
+            CACHE_TTL)       export LW_CACHE_TTL="$value" ;;
+            CACHE_DIR)       export LW_CACHE_DIR="$value" ;;
+            MINI_FORMAT)     export LW_MINI_FORMAT="$value" ;;
+            FORECAST_DAYS)   export LW_FORECAST_DAYS="$value" ;;
+            WTTR_VERSION)    export LW_WTTR_VERSION="$value" ;;
+            UNITS)           export LW_UNITS="$value" ;;
         esac
     done < "$file"
 }

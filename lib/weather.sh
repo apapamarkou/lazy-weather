@@ -37,15 +37,15 @@ get_weather_mini() {
 
 # ── wttr.in ───────────────────────────────────────────────────────────────────
 
-_wttr_encode_city() {
-    python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$1" 2>/dev/null \
-        || echo "$1" | sed 's/ /+/g'
+_wttr_encode() {
+    python3 -c 'import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))' "$1" 2>/dev/null \
+        || echo "${1// /+}"
 }
 
 _fetch_wttr() {
     local city="$1"
     local encoded_city narrow_flag
-    encoded_city="$(_wttr_encode_city "$city")"
+    encoded_city="$(_wttr_encode "$city")"
     [[ "$LW_WTTR_VERSION" == "narrow" ]] && narrow_flag="n" || narrow_flag=""
 
     curl -fsSL --max-time 10 \
@@ -62,9 +62,9 @@ _fetch_wttr_mini() {
     fi
 
     local encoded_city encoded_format result
-    encoded_city="$(_wttr_encode_city "$city")"
-    encoded_format="$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$LW_MINI_FORMAT" 2>/dev/null \
-        || echo "$LW_MINI_FORMAT" | sed 's/ /%20/g')"
+    encoded_city="$(_wttr_encode "$city")"
+    encoded_format="$(_wttr_encode "$LW_MINI_FORMAT")"
+    encoded_format="${encoded_format//+/%20}"
 
     result="$(curl -fsSL --max-time 10 \
         "https://wttr.in/${encoded_city}?FqQ${LW_UNITS}&format=${encoded_format}" 2>/dev/null || true)"

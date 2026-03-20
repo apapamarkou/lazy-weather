@@ -33,6 +33,6 @@ jobs:
 
       - name: Lint shell scripts
         run: |
-          shellcheck bin/lazy-weather
-          shellcheck lib/*.sh
-          shellcheck install.sh uninstall.sh run-tests.sh
+          shellcheck -x bin/lazy-weather
+          shellcheck -x lib/*.sh
+          shellcheck -x install.sh uninstall.sh run-tests.sh

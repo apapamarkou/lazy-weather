@@ -1,0 +1,17 @@
+# Cache files
+*.cache
+*.meta
+
+# Test artifacts
+tests/tmp/
+.bats_tmp/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# OS
+.DS_Store
+Thumbs.db

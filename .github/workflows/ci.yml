@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install bats-core
+        run: |
+          git clone --depth=1 https://github.com/bats-core/bats-core.git /tmp/bats-core
+          /tmp/bats-core/install.sh "${HOME}/.local"
+          echo "${HOME}/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Run tests
+        run: bats --tap tests/
+
+  shellcheck:
+    name: Code Style (shellcheck)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install shellcheck
+        run: sudo apt-get install -y shellcheck
+
+      - name: Lint shell scripts
+        run: |
+          shellcheck bin/lazy-weather
+          shellcheck lib/*.sh
+          shellcheck install.sh uninstall.sh run-tests.sh

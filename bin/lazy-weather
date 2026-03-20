@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+# lazy-weather — Fast, cached CLI weather tool
+# https://github.com/<user>/lazy-weather
+
+set -euo pipefail
+
+# ── Bootstrap ─────────────────────────────────────────────────────────────────
+
+LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../lib" && pwd)"
+
+source "${LIB_DIR}/utils.sh"
+source "${LIB_DIR}/config.sh"
+source "${LIB_DIR}/cache.sh"
+source "${LIB_DIR}/weather.sh"
+source "${LIB_DIR}/ui.sh"
+
+setup_colors
+
+# ── Argument parsing ──────────────────────────────────────────────────────────
+
+OPT_CITY=""
+OPT_MINI=0
+OPT_REFRESH=0
+OPT_TTL=""
+OPT_PREVIEW_CITY=""
+
+parse_args() {
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -c|--city)         OPT_CITY="$2";         shift 2 ;;
+            -m|--mini)         OPT_MINI=1;            shift   ;;
+            -r|--refresh)      OPT_REFRESH=1;         shift   ;;
+            -t|--ttl)          OPT_TTL="$2";          shift 2 ;;
+            -d|--debug)        LW_DEBUG=1;            shift   ;;
+            --preview-city)    OPT_PREVIEW_CITY="$2"; shift 2 ;;
+            --clear-cache)     cache_clear_all; exit 0 ;;
+            -v|--version)      echo "lazy-weather v${LW_VERSION}"; exit 0 ;;
+            -h|--help)         show_help; exit 0 ;;
+            --)                shift; break ;;
+            -*)                lw_error "Unknown option: $1"; show_help; exit 1 ;;
+            *)                 OPT_CITY="$1"; shift ;;
+        esac
+    done
+}
+
+# ── Main ──────────────────────────────────────────────────────────────────────
+
+main() {
+    parse_args "$@"
+
+    load_config
+    init_config_dir
+
+    # CLI flags override config
+    [[ -n "$OPT_TTL" ]] && LW_CACHE_TTL="$OPT_TTL"
+
+    check_dependencies
+
+    # Internal: fzf preview callback
+    if [[ -n "$OPT_PREVIEW_CITY" ]]; then
+        show_preview "$OPT_PREVIEW_CITY"
+        exit 0
+    fi
+
+    # Mini mode (status bars) — resolve city early, never open fzf
+    if [[ "$OPT_MINI" -eq 1 ]]; then
+        local city="${OPT_CITY:-${LW_CITIES[0]:-${LW_DEFAULT_CITY}}}"
+        [[ -z "$city" ]] && { echo "N/A"; exit 1; }
+        print_mini "$(get_weather_mini "$city" "$OPT_REFRESH")"
+        exit 0
+    fi
+
+    # Determine city (interactive)
+    local city="$OPT_CITY"
+    if [[ -z "$city" ]]; then
+        if [[ ${#LW_CITIES[@]} -ge 1 ]]; then
+            city="$(pick_city "${LW_CITIES[@]}")" || { lw_info "Cancelled."; exit 0; }
+        elif [[ -n "$LW_DEFAULT_CITY" ]]; then
+            city="$LW_DEFAULT_CITY"
+        else
+            lw_error "No city specified. Use -c CITY or configure cities in ${LW_CONFIG_FILE}"
+            exit 1
+        fi
+    fi
+
+    # Full weather display
+    local data
+    data="$(get_weather "$city" "$OPT_REFRESH")"
+    print_weather "$city" "$data"
+}
+
+main "$@"

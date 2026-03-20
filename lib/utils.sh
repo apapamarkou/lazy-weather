@@ -9,7 +9,7 @@ _lw_log()  { echo -e "${1}[lazy-weather] ${2}${C_RESET:-}" >&2; }
 lw_info()  { _lw_log "${C_CYAN:-}"    "INFO  $*"; }
 lw_warn()  { _lw_log "${C_YELLOW:-}"  "WARN  $*"; }
 lw_error() { _lw_log "${C_RED:-}"     "ERROR $*"; }
-lw_debug() { [[ "${LW_DEBUG:-0}" == "1" ]] && _lw_log "${C_DIM:-}" "DEBUG $*" || true; }
+lw_debug() { [[ "${LW_DEBUG:-0}" == "1" ]] && _lw_log "${C_DIM:-}" "DEBUG $*"; return 0; }
 
 # ── Colors ────────────────────────────────────────────────────────────────────
 

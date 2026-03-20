@@ -5,15 +5,20 @@ set -euo pipefail
 BATS_DIR="/tmp/bats-core"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# ── Install bats-core if not available ────────────────────────────────────────
-if ! command -v bats &>/dev/null; then
-    echo "bats not found — installing bats-core..."
-    rm -rf "$BATS_DIR"
-    git clone --depth=1 https://github.com/bats-core/bats-core.git "$BATS_DIR"
-    "$BATS_DIR/install.sh" "${HOME}/.local"
-    export PATH="${HOME}/.local/bin:${PATH}"
+# ── Locate or install bats ────────────────────────────────────────────────────
+
+if command -v bats &>/dev/null; then
+    BATS_BIN="$(command -v bats)"
+else
+    if [[ ! -x "${BATS_DIR}/bin/bats" ]]; then
+        echo "bats not found — cloning bats-core to /tmp..."
+        rm -rf "$BATS_DIR"
+        git clone --depth=1 https://github.com/bats-core/bats-core.git "$BATS_DIR"
+    fi
+    BATS_BIN="${BATS_DIR}/bin/bats"
 fi
 
 # ── Run tests ─────────────────────────────────────────────────────────────────
+
 echo "Running lazy-weather test suites..."
-bats --tap "${REPO_ROOT}/src/tests/"
+"$BATS_BIN" --tap "${REPO_ROOT}/src/tests/"

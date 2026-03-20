@@ -46,13 +46,13 @@ A fast, cached CLI weather tool with fzf interactive city picker and status bar 
 ### One-line install (curl)
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/<user>/lazy-weather/main/install | bash
+curl -sSL https://raw.githubusercontent.com/apapamarkou/lazy-weather/main/install | bash
 ```
 
 ### From source
 
 ```bash
-git clone https://github.com/<user>/lazy-weather.git
+git clone https://github.com/apapamarkou/lazy-weather.git
 cd lazy-weather
 bash install
 ```
@@ -60,8 +60,8 @@ bash install
 ### Add to PATH (if needed)
 
 ```bash
-echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
-source ~/.bashrc
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.profile
+source ~/.profile
 ```
 
 ## Usage

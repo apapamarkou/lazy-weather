@@ -24,9 +24,9 @@ pick_city() {
                 --height=100% \
                 --border=rounded \
                 --prompt="  City > " \
-                --header="$(echo -e "${C_CYAN}${C_BOLD}lazy-weather${C_RESET}  ${C_DIM}Enter:default · ^R:refresh · ^N:new · ^X:delete · ^U:up · ^D:down · ^O:options · ESC:quit${C_RESET}")" \
+                --header="$(echo -e "${C_CYAN}${C_BOLD}Weather${C_RESET}\n${C_DIM}Enter:default · ^R:refresh · ^N:new\n^X:delete · ^U:up · ^D:down · ^O:options${C_RESET}")" \
                 --preview="[[ {} == '── Exit ──' ]] && echo 'Quit lazy-weather' || ${script_path} --preview-city {}" \
-                --preview-window="right:55%:wrap:border-left" \
+                --preview-window="right:125:wrap:border-left" \
                 --color="header:cyan:bold,prompt:yellow:bold,pointer:magenta:bold" \
                 --pointer="▶" \
                 --no-info \

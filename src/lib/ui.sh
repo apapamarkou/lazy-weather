@@ -88,7 +88,7 @@ pick_city() {
                 local opt
                 opt=$(printf 'Forecast Days: %s\nVersion: %s\nUnits: %s\nBack to cities\n' \
                         "${LW_FORECAST_DAYS}" "${LW_WTTR_VERSION}" "${LW_UNITS}" | \
-                    fzf --ansi --reverse --height=40% --border=rounded \
+                    fzf --ansi --reverse --height=100% --border=rounded \
                         --prompt="  Options > " --no-info \
                         --header="$(echo -e "${C_DIM}Select option · ESC cancel${C_RESET}")" \
                         --color="header:cyan,prompt:yellow:bold,pointer:magenta:bold" \
@@ -97,7 +97,7 @@ pick_city() {
                     Forecast\ Days:*)
                         local days
                         days=$(printf '0\n1\n2\n3\n' | \
-                            fzf --ansi --reverse --height=30% --border=rounded \
+                            fzf --ansi --reverse --height=100% --border=rounded \
                                 --prompt="  Forecast Days > " --no-info \
                                 --color="prompt:yellow:bold,pointer:magenta:bold" \
                                 --pointer="▶") || true
@@ -106,7 +106,7 @@ pick_city() {
                     Version:*)
                         local ver
                         ver=$(printf 'narrow\nwide\n' | \
-                            fzf --ansi --reverse --height=30% --border=rounded \
+                            fzf --ansi --reverse --height=100% --border=rounded \
                                 --prompt="  Version > " --no-info \
                                 --color="prompt:yellow:bold,pointer:magenta:bold" \
                                 --pointer="▶") || true
@@ -115,7 +115,7 @@ pick_city() {
                     Units:*)
                         local units
                         units=$(printf 'metric (m)\nUSCS (u)\n' | \
-                            fzf --ansi --reverse --height=30% --border=rounded \
+                            fzf --ansi --reverse --height=100% --border=rounded \
                                 --prompt="  Units > " --no-info \
                                 --color="prompt:yellow:bold,pointer:magenta:bold" \
                                 --pointer="▶") || true

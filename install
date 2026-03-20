@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 # install — Install lazy-weather
-set -euo pipefail
+set -eo pipefail
+
+# Resolve script location before set -u — BASH_SOURCE[0] is unbound when
+# piped via curl | bash, so we guard it explicitly here.
+SCRIPT_DIR=""
+if [[ -n "${BASH_SOURCE[0]:-}" ]]; then
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd)" || true
+fi
+
+set -u
 
 SHARE_DIR="${HOME}/.local/share/lazy-weather"
 BIN_LINK="${HOME}/.local/bin/weather"
@@ -18,18 +27,13 @@ die()  { echo -e "${C_RED}[install] ERROR:${C_RESET} $*" >&2; exit 1; }
 
 # ── Detect local vs curl-pipe install ────────────────────────────────────────
 
-SCRIPT_DIR=""
-if [[ -n "${BASH_SOURCE[0]:-}" ]]; then
-    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd)" || true
-fi
-
 if [[ -n "$SCRIPT_DIR" && -f "${SCRIPT_DIR}/src/bin/lazy-weather" ]]; then
     USE_LOCAL=1
     info "Installing from local source: ${SCRIPT_DIR}"
 else
     USE_LOCAL=0
     info "Downloading from GitHub..."
-    command -v curl &>/dev/null || die "curl is required to download. Install it and retry."
+    command -v curl &>/dev/null || die "curl is required. Install it and retry."
 fi
 
 # ── Package manager detection ─────────────────────────────────────────────────
@@ -88,13 +92,12 @@ _get_file() {
     fi
 }
 
-_get_file src/bin/lazy-weather        "${SHARE_DIR}/bin/lazy-weather"
-_get_file src/config/default.conf     "${SHARE_DIR}/config/default.conf"
+_get_file src/bin/lazy-weather    "${SHARE_DIR}/bin/lazy-weather"
+_get_file src/config/default.conf "${SHARE_DIR}/config/default.conf"
 for lib in utils.sh config.sh cache.sh weather.sh ui.sh; do
     _get_file "src/lib/${lib}" "${SHARE_DIR}/lib/${lib}"
 done
 
-# Patch LIB_DIR in installed binary to point to installed lib path
 sed -i "s|LIB_DIR=.*|LIB_DIR=\"${SHARE_DIR}/lib\"|" "${SHARE_DIR}/bin/lazy-weather"
 chmod +x "${SHARE_DIR}/bin/lazy-weather"
 

@@ -20,7 +20,7 @@ jobs:
           echo "${HOME}/.local/bin" >> "$GITHUB_PATH"
 
       - name: Run tests
-        run: bats --tap tests/
+        run: bats --tap src/tests/
 
   shellcheck:
     name: Code Style (shellcheck)
@@ -33,6 +33,6 @@ jobs:
 
       - name: Lint shell scripts
         run: |
-          shellcheck -x bin/lazy-weather
-          shellcheck -x lib/*.sh
-          shellcheck -x install.sh uninstall.sh run-tests.sh
+          shellcheck -x src/bin/lazy-weather
+          shellcheck -x src/lib/*.sh
+          shellcheck -x install uninstall run-tests.sh

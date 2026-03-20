@@ -1,0 +1,115 @@
+#!/usr/bin/env bash
+# install — Install lazy-weather
+set -euo pipefail
+
+SHARE_DIR="${HOME}/.local/share/lazy-weather"
+BIN_LINK="${HOME}/.local/bin/weather"
+CONFIG_DIR="${HOME}/.config/lazy-weather"
+DESKTOP_DIR="${HOME}/.local/share/applications"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+C_GREEN='\033[0;32m'; C_CYAN='\033[0;36m'
+C_YELLOW='\033[0;33m'; C_RED='\033[0;31m'; C_RESET='\033[0m'
+
+info() { echo -e "${C_CYAN}[install]${C_RESET} $*"; }
+ok()   { echo -e "${C_GREEN}[install]${C_RESET} $*"; }
+warn() { echo -e "${C_YELLOW}[install]${C_RESET} $*"; }
+die()  { echo -e "${C_RED}[install] ERROR:${C_RESET} $*" >&2; exit 1; }
+
+# ── Package manager detection ─────────────────────────────────────────────────
+
+_detect_pm() {
+    if   command -v pacman  &>/dev/null; then echo "pacman"
+    elif command -v apt-get &>/dev/null; then echo "apt"
+    elif command -v dnf     &>/dev/null; then echo "dnf"
+    elif command -v zypper  &>/dev/null; then echo "zypper"
+    else echo "unknown"
+    fi
+}
+
+_install_pkg() {
+    local pkg="$1"
+    case "$(_detect_pm)" in
+        pacman)  sudo pacman -S --noconfirm "$pkg" ;;
+        apt)     sudo apt-get install -y "$pkg" ;;
+        dnf)     sudo dnf install -y "$pkg" ;;
+        zypper)  sudo zypper install -y "$pkg" ;;
+        *)       die "Unsupported package manager. Install '${pkg}' manually." ;;
+    esac
+}
+
+_prompt_install() {
+    local cmd="$1" pkg="${2:-$1}"
+    warn "'${cmd}' is not installed."
+    printf "  Install it now? [Y/n] "
+    read -r -n1 answer
+    echo
+    if [[ "${answer,,}" != "n" ]]; then
+        _install_pkg "$pkg"
+    else
+        die "'${cmd}' is required. Aborting."
+    fi
+}
+
+# ── Check dependencies ────────────────────────────────────────────────────────
+
+for cmd in curl fzf; do
+    command -v "$cmd" &>/dev/null || _prompt_install "$cmd"
+done
+
+# ── Install files ─────────────────────────────────────────────────────────────
+
+info "Installing to ${SHARE_DIR}..."
+mkdir -p "${SHARE_DIR}/bin" "${SHARE_DIR}/lib" "${SHARE_DIR}/config"
+mkdir -p "${HOME}/.local/bin" "${DESKTOP_DIR}" "${CONFIG_DIR}"
+
+cp "${SCRIPT_DIR}/src/bin/lazy-weather"    "${SHARE_DIR}/bin/lazy-weather"
+cp "${SCRIPT_DIR}/src/lib/"*.sh            "${SHARE_DIR}/lib/"
+cp "${SCRIPT_DIR}/src/config/default.conf" "${SHARE_DIR}/config/default.conf"
+
+# Patch LIB_DIR in installed binary to point to installed lib path
+sed -i "s|LIB_DIR=.*|LIB_DIR=\"${SHARE_DIR}/lib\"|" "${SHARE_DIR}/bin/lazy-weather"
+
+chmod +x "${SHARE_DIR}/bin/lazy-weather"
+
+# ── Symlink ───────────────────────────────────────────────────────────────────
+
+ln -sf "${SHARE_DIR}/bin/lazy-weather" "$BIN_LINK"
+ok "Linked: ${BIN_LINK} -> ${SHARE_DIR}/bin/lazy-weather"
+
+# ── Default config ────────────────────────────────────────────────────────────
+
+if [[ ! -f "${CONFIG_DIR}/config" ]]; then
+    cp "${SHARE_DIR}/config/default.conf" "${CONFIG_DIR}/config"
+    ok "Default config written to ${CONFIG_DIR}/config"
+else
+    warn "Config already exists at ${CONFIG_DIR}/config — not overwritten"
+fi
+
+# ── Desktop launcher ──────────────────────────────────────────────────────────
+
+cat > "${DESKTOP_DIR}/weather.desktop" <<EOF
+[Desktop Entry]
+Name=Weather
+Comment=lazy-weather — CLI weather tool
+Exec=${BIN_LINK}
+Icon=weather-few-clouds
+Terminal=true
+Type=Application
+Categories=Utility;
+Keywords=weather;forecast;cli;
+EOF
+
+ok "Desktop launcher written to ${DESKTOP_DIR}/weather.desktop"
+
+# ── Done ──────────────────────────────────────────────────────────────────────
+
+ok "Installation complete!"
+echo ""
+if [[ ":${PATH}:" != *":${HOME}/.local/bin:"* ]]; then
+    warn "${HOME}/.local/bin is not in your PATH."
+    echo "  Add this to your shell rc file:"
+    echo "    export PATH=\"\$HOME/.local/bin:\$PATH\""
+    echo ""
+fi
+echo -e "  Run: ${C_CYAN}weather --help${C_RESET}"

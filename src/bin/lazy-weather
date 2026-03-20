@@ -8,15 +8,15 @@ set -euo pipefail
 
 LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../lib" && pwd)"
 
-# shellcheck source=lib/utils.sh
+# shellcheck source=src/lib/utils.sh
 source "${LIB_DIR}/utils.sh"
-# shellcheck source=lib/config.sh
+# shellcheck source=src/lib/config.sh
 source "${LIB_DIR}/config.sh"
-# shellcheck source=lib/cache.sh
+# shellcheck source=src/lib/cache.sh
 source "${LIB_DIR}/cache.sh"
-# shellcheck source=lib/weather.sh
+# shellcheck source=src/lib/weather.sh
 source "${LIB_DIR}/weather.sh"
-# shellcheck source=lib/ui.sh
+# shellcheck source=src/lib/ui.sh
 source "${LIB_DIR}/ui.sh"
 
 setup_colors

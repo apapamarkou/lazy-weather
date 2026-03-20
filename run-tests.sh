@@ -16,4 +16,4 @@ fi
 
 # ── Run tests ─────────────────────────────────────────────────────────────────
 echo "Running lazy-weather test suites..."
-bats --tap "${REPO_ROOT}/tests/"
+bats --tap "${REPO_ROOT}/src/tests/"

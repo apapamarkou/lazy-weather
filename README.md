@@ -46,7 +46,7 @@ A fast, cached CLI weather tool with fzf interactive city picker and status bar 
 ### One-line install (curl)
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/<user>/lazy-weather/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/<user>/lazy-weather/main/install | bash
 ```
 
 ### From source
@@ -54,7 +54,7 @@ curl -sSL https://raw.githubusercontent.com/<user>/lazy-weather/main/install.sh 
 ```bash
 git clone https://github.com/<user>/lazy-weather.git
 cd lazy-weather
-bash install.sh
+bash install
 ```
 
 ### Add to PATH (if needed)
@@ -67,14 +67,14 @@ source ~/.bashrc
 ## Usage
 
 ```bash
-lazy-weather                  # fzf city picker
-lazy-weather -c "London"      # direct city lookup
-lazy-weather -m               # mini mode — uses top city in config
-lazy-weather -c "Tokyo" -m    # mini mode for a specific city
-lazy-weather -c "Paris" -r    # force refresh (ignore cache)
-lazy-weather --clear-cache    # clear all cached data
-lazy-weather -v               # print version
-lazy-weather -h               # show help
+weather                       # fzf city picker
+weather -c "London"           # direct city lookup
+weather -m                    # mini mode — uses top city in config
+weather -c "Tokyo" -m         # mini mode for a specific city
+weather -c "Paris" -r         # force refresh (ignore cache)
+weather --clear-cache         # clear all cached data
+weather -v                    # print version
+weather -h                    # show help
 ```
 
 ## fzf Keybindings
@@ -107,20 +107,20 @@ The top city in the list (set via `Enter` in the picker) is used when `-m` is ca
 ```ini
 [module/weather]
 type = custom/script
-exec = lazy-weather -m
+exec = weather -m
 interval = 1800
 ```
 
 **i3blocks:**
 ```ini
 [weather]
-command=lazy-weather -m
+command=weather -m
 interval=1800
 ```
 
 **With explicit city:**
 ```ini
-exec = lazy-weather -c "London" -m
+exec = weather -c "London" -m
 ```
 
 ## Configuration
@@ -155,24 +155,35 @@ UNITS=m
 
 ```
 lazy-weather/
-├── bin/
-│   └── lazy-weather        # main executable
-├── lib/
-│   ├── cache.sh            # per-city cache with TTL
-│   ├── weather.sh          # wttr.in provider
-│   ├── config.sh           # config loading and saving
-│   ├── ui.sh               # fzf picker and display
-│   └── utils.sh            # logging, colors, helpers
-├── config/
-│   └── default.conf        # bundled defaults
-├── tests/
-│   ├── test_cache.bats     # cache unit tests
-│   ├── test_weather.bats   # weather fetch tests (mocked)
-│   └── test_utils.bats     # utility function tests
-├── install.sh
-├── uninstall.sh
+├── src/
+│   ├── bin/
+│   │   └── lazy-weather        # main executable
+│   ├── lib/
+│   │   ├── cache.sh            # per-city cache with TTL
+│   │   ├── weather.sh          # wttr.in provider
+│   │   ├── config.sh           # config loading and saving
+│   │   ├── ui.sh               # fzf picker and display
+│   │   └── utils.sh            # logging, colors, helpers
+│   ├── config/
+│   │   └── default.conf        # bundled defaults
+│   └── tests/
+│       ├── test_cache.bats     # cache unit tests
+│       ├── test_weather.bats   # weather fetch tests (mocked)
+│       └── test_utils.bats     # utility function tests
+├── install                     # installer
+├── uninstall                   # uninstaller
+├── run-tests.sh
 ├── README.md
 └── .gitignore
+```
+
+Installed layout:
+
+```
+~/.local/share/lazy-weather/   # installed files
+~/.local/bin/weather           # symlink to binary
+~/.config/lazy-weather/config  # user config
+~/.local/share/applications/weather.desktop
 ```
 
 ## Running Tests
@@ -180,15 +191,11 @@ lazy-weather/
 Requires [bats-core](https://github.com/bats-core/bats-core):
 
 ```bash
-# Install bats
-git clone https://github.com/bats-core/bats-core.git /tmp/bats-core
-/tmp/bats-core/install.sh ~/.local
-
-# Run all tests
-bats tests/
+# Install bats and run all tests
+bash run-tests.sh
 
 # Run individual suite
-bats tests/test_weather.bats
+bats src/tests/test_weather.bats
 ```
 
 ## License

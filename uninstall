@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# uninstall — Remove lazy-weather
+set -euo pipefail
+
+SHARE_DIR="${HOME}/.local/share/lazy-weather"
+BIN_LINK="${HOME}/.local/bin/weather"
+CONFIG_DIR="${HOME}/.config/lazy-weather"
+DESKTOP_FILE="${HOME}/.local/share/applications/weather.desktop"
+
+C_CYAN='\033[0;36m'; C_YELLOW='\033[0;33m'; C_RESET='\033[0m'
+
+info() { echo -e "${C_CYAN}[uninstall]${C_RESET} $*"; }
+warn() { echo -e "${C_YELLOW}[uninstall]${C_RESET} $*"; }
+
+removed=0
+
+if [[ -L "$BIN_LINK" || -f "$BIN_LINK" ]]; then
+    rm -f "$BIN_LINK"
+    info "Removed ${BIN_LINK}"
+    removed=1
+fi
+
+if [[ -d "$SHARE_DIR" ]]; then
+    rm -rf "$SHARE_DIR"
+    info "Removed ${SHARE_DIR}"
+    removed=1
+fi
+
+if [[ -f "$DESKTOP_FILE" ]]; then
+    rm -f "$DESKTOP_FILE"
+    info "Removed ${DESKTOP_FILE}"
+    removed=1
+fi
+
+# Remove cache files
+if rm -f /tmp/lazy-weather-*.cache /tmp/lazy-weather-*.meta 2>/dev/null; then
+    info "Removed cache files from /tmp"
+fi
+
+echo ""
+if [[ "$removed" -eq 1 ]]; then
+    echo -e "${C_CYAN}lazy-weather uninstalled.${C_RESET}"
+else
+    warn "lazy-weather does not appear to be installed."
+fi
+
+echo ""
+echo "Your config at ${CONFIG_DIR} was NOT removed."
+echo "To remove it: rm -rf ${CONFIG_DIR}"

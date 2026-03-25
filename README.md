@@ -2,7 +2,7 @@
 
 A fast, cached CLI weather tool with fzf interactive city picker and status bar integration.
 
-https://github.com/user-attachments/assets/eae2b2b5-e4a3-4f5d-8878-40da63ca0034
+https://github.com/user-attachments/assets/48bee185-b494-4bfc-94d1-5905a4310e06
 
 ## Features
 
@@ -13,7 +13,7 @@ https://github.com/user-attachments/assets/eae2b2b5-e4a3-4f5d-8878-40da63ca0034
 - **Mini mode** — one-line output for polybar, i3blocks, waybar
 - **Units** — metric (m) or USCS (u) selectable via options menu
 - **Forecast days** — 0–3 days configurable via options menu
-- **Glyph version** — narrow (aligned) or wide (emoji) output
+- **Glyph version** — narrow or wide output
 - **fzf preview** — instant preview using cached data, Ctrl-R to force-refresh
 - **Default city** — Enter promotes a city to top; used automatically by `-m`
 - **Debug mode** — `--debug` flag for troubleshooting

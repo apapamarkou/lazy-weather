@@ -2,21 +2,7 @@
 
 A fast, cached CLI weather tool with fzf interactive city picker and status bar integration.
 
-```
-┌─────────────────────────────────────────────────────────┐
-│  lazy-weather  Enter:default · ^R:refresh · ^N:new      │
-│                ^X:delete · ^U:up · ^D:down · ^O:options  │
-├─────────────────────────────────────────────────────────┤
-│ ▶ London                  │ London                      │
-│   Tokyo                   │ Last updated: 2m ago        │
-│   New York                │                             │
-│   Paris                   │      \   /  Sunny           │
-│   Sydney                  │       .-.   +22°C           │
-│   ── Exit ──              │    - (   ) - 14 km/h        │
-│                           │       `-'   10 km           │
-│                           │      /   \  0.0 mm          │
-└─────────────────────────────────────────────────────────┘
-```
+https://github.com/user-attachments/assets/eae2b2b5-e4a3-4f5d-8878-40da63ca0034
 
 ## Features
 

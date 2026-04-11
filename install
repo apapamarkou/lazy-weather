@@ -98,7 +98,14 @@ for lib in utils.sh config.sh cache.sh weather.sh ui.sh; do
     _get_file "src/lib/${lib}" "${SHARE_DIR}/lib/${lib}"
 done
 
-sed -i "s|LIB_DIR=.*|LIB_DIR=\"${SHARE_DIR}/lib\"|" "${SHARE_DIR}/bin/lazy-weather"
+if sed --version >/dev/null 2>&1; then
+    # GNU sed
+    sed -i "s|LIB_DIR=.*|LIB_DIR=\"${SHARE_DIR}/lib\"|" "${SHARE_DIR}/bin/lazy-weather"
+else
+    # BSD sed
+    sed -i '' "s|LIB_DIR=.*|LIB_DIR=\"${SHARE_DIR}/lib\"|" "${SHARE_DIR}/bin/lazy-weather"
+fi
+
 chmod +x "${SHARE_DIR}/bin/lazy-weather"
 
 # ── Symlink ───────────────────────────────────────────────────────────────────

@@ -67,7 +67,7 @@ save_config_value() {
     local key="$1" value="$2"
     init_config_dir
     if grep -q "^${key}=" "$LW_CONFIG_FILE" 2>/dev/null; then
-        sed -i "s|^${key}=.*|${key}=${value}|" "$LW_CONFIG_FILE"
+        sed -i "" "s@^${key}=.*@${key}=${value}@" "$LW_CONFIG_FILE"
     else
         echo "${key}=${value}" >> "$LW_CONFIG_FILE"
     fi
